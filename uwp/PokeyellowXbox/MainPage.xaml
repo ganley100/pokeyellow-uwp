@@ -1,0 +1,23 @@
+<Page
+    x:Class="PokeyellowXbox.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
+    Background="Black">
+    <Grid>
+        <canvas:CanvasAnimatedControl
+            x:Name="Screen"
+            IsTabStop="False"
+            ClearColor="Black"
+            CreateResources="Screen_CreateResources"
+            Update="Screen_Update"
+            Draw="Screen_Draw" />
+        <Border x:Name="MessageBox"
+                HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                Margin="0,0,0,60" Padding="24,14"
+                Background="#CC000000" CornerRadius="6">
+            <TextBlock x:Name="Message" Foreground="White" FontSize="20"
+                       TextAlignment="Center" TextWrapping="Wrap" MaxWidth="900" />
+        </Border>
+    </Grid>
+</Page>

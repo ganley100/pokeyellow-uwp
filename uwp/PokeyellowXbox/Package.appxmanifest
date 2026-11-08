@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  IgnorableNamespaces="uap mp">
+
+  <!-- Publisher must match the subject of the certificate the package is signed with. -->
+  <Identity Name="PokeyellowXbox" Publisher="CN=PokeyellowXbox" Version="1.0.0.0" />
+
+  <mp:PhoneIdentity PhoneProductId="6f3c3a52-8e0b-4a4f-9d1e-3b0f6c0a7d21" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+
+  <Properties>
+    <DisplayName>Pokémon Yellow</DisplayName>
+    <PublisherDisplayName>pokeyellow</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="x-generate"/>
+  </Resources>
+
+  <Applications>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="PokeyellowXbox.App">
+      <uap:VisualElements
+        DisplayName="Pokémon Yellow"
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png"
+        Description="Pokémon Yellow, built from the pokeyellow disassembly"
+        BackgroundColor="#E8B800">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
+        <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#E8B800" />
+        <uap:InitialRotationPreference>
+          <uap:Rotation Preference="landscape"/>
+        </uap:InitialRotationPreference>
+      </uap:VisualElements>
+    </Application>
+  </Applications>
+</Package>

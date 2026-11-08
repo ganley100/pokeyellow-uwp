@@ -11,6 +11,7 @@ It builds the following ROMs:
 To set up the repository, see [**INSTALL.md**](INSTALL.md).
 
 To play it on **Google TV / Android TV**, see [**android/README.md**](android/README.md).
+To play it on **Xbox** (Developer Mode, UWP), see [**uwp/README.md**](uwp/README.md).
 
 
 ## See also

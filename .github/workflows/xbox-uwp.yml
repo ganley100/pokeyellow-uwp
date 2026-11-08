@@ -1,0 +1,97 @@
+name: Xbox UWP package
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  rgbds_version: v1.0.4
+
+jobs:
+  rom-and-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Checkout rgbds
+        uses: actions/checkout@v7
+        with:
+          path: rgbds
+          ref: ${{ env.rgbds_version }}
+          repository: gbdev/rgbds
+
+      - name: Install rgbds
+        working-directory: rgbds
+        run: |
+          sudo apt-get update
+          sudo apt-get install -yq bison libpng-dev pkg-config
+          sudo make -j$(nproc) install
+
+      - name: Remove rgbds
+        run: rm -rf rgbds
+
+      - name: Build ROM
+        run: make -j$(nproc) pokeyellow.gbc
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Test emulator core
+        run: dotnet test uwp/GameBoyCore.Tests --logger "console;verbosity=normal"
+
+      - name: Upload ROM for the Windows build
+        uses: actions/upload-artifact@v5
+        with:
+          name: rom
+          path: pokeyellow.gbc
+          retention-days: 1
+
+  package:
+    needs: rom-and-tests
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Download ROM
+        uses: actions/download-artifact@v5
+        with:
+          name: rom
+          path: .
+
+      - name: Set up MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Create signing certificate
+        shell: pwsh
+        run: |
+          # Throwaway self-signed certificate; its subject must match Publisher in Package.appxmanifest.
+          $cert = New-SelfSignedCertificate -Type Custom -Subject "CN=PokeyellowXbox" `
+            -KeyUsage DigitalSignature -FriendlyName "PokeyellowXbox" `
+            -CertStoreLocation "Cert:\CurrentUser\My" `
+            -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3", "2.5.29.19={text}")
+          $password = ConvertTo-SecureString -String "pokeyellow" -Force -AsPlainText
+          Export-PfxCertificate -Cert $cert -FilePath uwp\PokeyellowXbox\signing.pfx -Password $password | Out-Null
+          New-Item -ItemType Directory -Force -Path uwp\PokeyellowXbox\AppPackages | Out-Null
+          Export-Certificate -Cert $cert -FilePath uwp\PokeyellowXbox\AppPackages\PokeyellowXbox.cer | Out-Null
+
+      - name: Build package
+        run: >
+          msbuild uwp\PokeyellowXbox\PokeyellowXbox.csproj /restore /m
+          /p:Configuration=Release /p:Platform=x64
+          /p:GenerateAppxPackageOnBuild=true
+          /p:AppxPackageSigningEnabled=true
+          /p:PackageCertificateKeyFile=signing.pfx
+          /p:PackageCertificatePassword=pokeyellow
+
+      - name: Upload package
+        uses: actions/upload-artifact@v5
+        with:
+          name: pokeyellow-xbox-package
+          path: |
+            uwp/PokeyellowXbox/AppPackages/**
+          retention-days: 14
