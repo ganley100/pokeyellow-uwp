@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pokémon Yellow</string>
+    <string name="controls_hint">Remote: OK = A · Back = B · Hold Back = START · Hold OK = Menu\nGamepads work too</string>
+    <string name="menu_title">Menu</string>
+    <string name="menu_resume">Resume</string>
+    <string name="menu_start">Press START</string>
+    <string name="menu_select">Press SELECT</string>
+    <string name="menu_fast_forward_on">Fast-forward: on</string>
+    <string name="menu_fast_forward_off">Fast-forward: off</string>
+    <string name="menu_controls">Show controls</string>
+    <string name="menu_exit">Exit</string>
+    <string name="no_rom">No ROM found.\n\nBuild pokeyellow.gbc with `make` in the repository root and rebuild the app so it is bundled, or copy it to:\n%1$s\n\nPress OK to choose a file instead.</string>
+    <string name="rom_error">Could not load the ROM: %1$s</string>
+</resources>

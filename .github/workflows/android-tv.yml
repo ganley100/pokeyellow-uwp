@@ -1,0 +1,57 @@
+name: Google TV APK
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  rgbds_version: v1.0.4
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Checkout rgbds
+        uses: actions/checkout@v7
+        with:
+          path: rgbds
+          ref: ${{ env.rgbds_version }}
+          repository: gbdev/rgbds
+
+      - name: Install rgbds
+        working-directory: rgbds
+        run: |
+          sudo apt-get update
+          sudo apt-get install -yq bison libpng-dev pkg-config
+          sudo make -j$(nproc) install
+
+      - name: Remove rgbds
+        run: rm -rf rgbds
+
+      - name: Build ROM
+        run: make -j$(nproc) pokeyellow.gbc
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          gradle-version: 8.14.3
+
+      - name: Test emulator core and build APK
+        run: gradle -p android :core:test :app:assembleRelease
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v5
+        with:
+          name: pokeyellow-googletv-apk
+          path: android/app/build/outputs/apk/release/app-release.apk
+          retention-days: 14

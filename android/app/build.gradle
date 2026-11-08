@@ -1,0 +1,56 @@
+plugins {
+    id 'com.android.application'
+}
+
+// The game ROM is not stored in git. Build it in the repository root with
+// `make` first; this task bundles that pokeyellow.gbc into the APK.
+def romFile = rootProject.file('../pokeyellow.gbc')
+def romAssetsDir = layout.buildDirectory.dir('generated/romAssets')
+
+tasks.register('bundleRom', Copy) {
+    from(romFile)
+    into(romAssetsDir)
+    doFirst {
+        if (!romFile.exists()) {
+            logger.warn("pokeyellow.gbc not found at ${romFile}. Run `make` in the repository root " +
+                    "first, or the app will ask you to pick a ROM file at runtime.")
+        }
+    }
+}
+
+android {
+    namespace 'com.pokeyellow.tv'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.pokeyellow.tv'
+        minSdk 24
+        targetSdk 35
+        versionCode 1
+        versionName '1.0'
+    }
+
+    sourceSets {
+        main.assets.srcDirs += romAssetsDir
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            // Signed with the debug key so the APK can be sideloaded straight away.
+            // Replace with your own signing config before publishing anywhere.
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+}
+
+tasks.named('preBuild') { dependsOn 'bundleRom' }
+
+dependencies {
+    implementation project(':core')
+}

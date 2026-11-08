@@ -10,6 +10,8 @@ It builds the following ROMs:
 
 To set up the repository, see [**INSTALL.md**](INSTALL.md).
 
+To play it on **Google TV / Android TV**, see [**android/README.md**](android/README.md).
+
 
 ## See also
 
